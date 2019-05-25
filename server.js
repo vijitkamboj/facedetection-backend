@@ -27,7 +27,7 @@ const database ={
 }
 
 app.get("/" , (req,res) => {
-    res.send("Yeah IT's Working")
+    res.send(database.users)
 })
 
 app.post("/register" ,(req,res) => {
@@ -58,7 +58,7 @@ app.post("/signin", (req, res) => {
 
 })
 
-app.put('/profile:id', (req,res) => {
+app.get('/profile:id', (req,res) => {
     const {id} = req.params;
     let found =false ;
     database.users.forEach( (user) => {
@@ -66,14 +66,15 @@ app.put('/profile:id', (req,res) => {
             found =true;
             return(res.json(user))
         }
-        if (!found){
-            res.status(400).json("not found")
-        }
+
     })
+    if (!found){
+        res.status(400).json("not found")
+    }
 
 })
 
-app.put('/image-count', (req,res) => {
+app.put('/imagecount', (req,res) => {
     const {id} = req.body;
     let found =false ;
     database.users.forEach( (user) => {
@@ -82,10 +83,11 @@ app.put('/image-count', (req,res) => {
             user.entries++;
             return(res.json(user.entries))
         }
-        if (!found){
-            res.status(400).json("not found")
-        }
     })
+    if (!found){
+        res.status(400).json("not found")
+    }
+    
 
 })
 
