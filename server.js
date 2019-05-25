@@ -24,6 +24,14 @@ const database ={
             entries: 0,
             joined : new Date()
         }
+    ],
+
+    login : [
+        {
+            id: '987',
+            hash: '',
+            email: 'vijitkamboj92@gmail.com'
+        }
     ]
 }
 
