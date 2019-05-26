@@ -59,11 +59,10 @@ app.post("/signin", (req, res) => {
     const user = database.users.filter((user) => {
         return( req.body.email === user.email)
     })
-    
     if ( user.length> 0 && user[0].password === req.body.password){
-        res.json( "user Confirmed")
+        res.json("success")
     }else{
-        res.status(400).json("error logging in")
+        res.status(400).json("error logging in ")
     }
 
 })
