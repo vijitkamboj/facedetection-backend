@@ -36,7 +36,7 @@ const database ={
 }
 
 app.get("/" , (req,res) => {
-    res.send(database.users)
+    res.json(database.users)
 })
 
 app.post("/register" ,(req,res) => {
