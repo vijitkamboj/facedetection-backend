@@ -52,7 +52,7 @@ app.post("/register" ,(req,res) => {
             joined : new Date()
         }
     )
-    res.json(database.users[database.users.length-1])
+    res.json("Successfully Registered")
 })
 
 app.post("/signin", (req, res) => {
@@ -60,9 +60,9 @@ app.post("/signin", (req, res) => {
         return( req.body.email === user.email)
     })
     if ( user.length> 0 && user[0].password === req.body.password){
-        res.json("success")
+        res.json(user[0])
     }else{
-        res.status(400).json("error logging in ")
+        res.status(400).json(false)
     }
 
 })
