@@ -15,7 +15,9 @@ const database ={
             email : "vijitkamboj92@gmail.com",
             password : "cookies",
             entries: 0,
-            joined : new Date()
+            joined : new Date(),
+            rank: 1
+            
         },
         {
             id: 1 ,
@@ -23,7 +25,8 @@ const database ={
             email : "nikhil@gmail.com",
             password : "nikhil",
             entries: 0,
-            joined : new Date()
+            joined : new Date(),
+            rank:2
         }
     ],
 
@@ -34,6 +37,13 @@ const database ={
             email: 'vijitkamboj92@gmail.com'
         }
     ]
+}
+
+const ranker = () =>{
+    database.users.sort( (a,b) => b.entries - a.entries)
+    database.users.map((user , i) =>{
+        user.rank = i+1
+    } )
 }
 
 app.get("/" , (req,res) => {
@@ -49,7 +59,8 @@ app.post("/register" ,(req,res) => {
             email : email,
             password : password,
             entries: 0,
-            joined : new Date()
+            joined : new Date(),
+            rank: database.users.length +1
         }
     )
     res.json("Successfully Registered")
@@ -72,7 +83,6 @@ app.get('/profile/:id', (req,res) => {
     let found =false ;
     database.users.forEach( user => {
         if (user.id == id){
-            console.log(user.id , id);
             found =true;
             return res.json(user)
         }
@@ -90,15 +100,18 @@ app.put('/imagecount', (req,res) => {
         if (user.id === id){
             found =true;
             user.entries += count;
+            ranker()
             return(res.json(user))
         }
     })
+
     if (!found){
         res.status(400).json("not found")
     }
     
 
 })
+
 
 app.listen(3000 , () => {
     console.log("App is running at port 3000")
