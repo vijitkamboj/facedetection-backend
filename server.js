@@ -84,13 +84,13 @@ app.get('/profile/:id', (req,res) => {
 })
 
 app.put('/imagecount', (req,res) => {
-    const {id} = req.body;
+    const {id , count} = req.body;
     let found =false ;
     database.users.forEach( (user) => {
         if (user.id === id){
             found =true;
-            user.entries++;
-            return(res.json(user.entries))
+            user.entries += count;
+            return(res.json(user))
         }
     })
     if (!found){
