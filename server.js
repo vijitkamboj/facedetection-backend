@@ -93,7 +93,6 @@ app.get('/profile/:id', (req, res) => {
     }
 
 })
-
 app.put('/imagecount', (req, res) => {
     const {
         id,
@@ -105,7 +104,10 @@ app.put('/imagecount', (req, res) => {
             found = true;
             user.entries += count;
             ranker()
-            return (res.json(user))
+            return (res.json({
+                entries: user.entries,
+                rank: user.rank
+            }))
         }
     })
 
