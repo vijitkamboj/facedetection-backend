@@ -69,8 +69,6 @@ app.post("/register", (req, res) => {
         email: email,
         joined : new Date()
     })
-    
-
     res.json("Successfully Registered")
 })
 
