@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const knex = require('knex');
 
-const Database = knex({
+const db = knex({
     client : 'pg',
     connection: {
         host: '127.0.0.1',
@@ -12,8 +12,6 @@ const Database = knex({
         database: 'facedetection'
     }
 })
-
-console.log(Database.select('*').from('users') )
 
 const app = express();
 
@@ -66,15 +64,13 @@ app.post("/register", (req, res) => {
         password,
         name
     } = req.body
-    database.users.push({
-        id: 12,
+    db('users').insert({
         name: name,
         email: email,
-        password: password,
-        entries: 0,
-        joined: new Date(),
-        rank: database.users.length + 1
+        joined : new Date()
     })
+    
+
     res.json("Successfully Registered")
 })
 
