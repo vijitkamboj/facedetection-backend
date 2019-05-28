@@ -4,8 +4,12 @@ const bcrypt = require('bcrypt-nodejs')
 const cors = require('cors')
 const knex = require('knex');
 
+const app = express();
+app.use(bodyParser.json())
+app.use(cors())
+
 const db = knex({
-    client : 'pg',
+    client: 'pg',
     connection: {
         host: '127.0.0.1',
         user: 'postgres',
@@ -13,47 +17,6 @@ const db = knex({
         database: 'facedetection'
     }
 })
-
-const app = express();
-
-app.use(bodyParser.json())
-app.use(cors())
-
-const database = {
-    users: [{
-            id: 0,
-            name: 'Vijit',
-            email: "vijitkamboj92@gmail.com",
-            password: "cookies",
-            entries: 0,
-            joined: new Date(),
-            rank: 1
-
-        },
-        {
-            id: 1,
-            name: 'Nikhil',
-            email: "nikhil@gmail.com",
-            password: "nikhil",
-            entries: 0,
-            joined: new Date(),
-            rank: 2
-        }
-    ],
-
-    login: [{
-        id: '987',
-        hash: '',
-        email: 'vijitkamboj92@gmail.com'
-    }]
-}
-
-const ranker = () => {
-    database.users.sort((a, b) => b.entries - a.entries)
-    database.users.map((user, i) => {
-        user.rank = i + 1
-    })
-}
 
 app.get("/", (req, res) => {
     res.json("WELCOME")
@@ -83,13 +46,32 @@ app.post("/register", (req, res) => {
                 )
             }).then(trx.commit)
             .then(trx.rollback)
-    }).catch( err => res.status(400).json(err))
+    }).catch(err => res.status(400).json(err))
 
 })
 
 app.post("/signin", (req, res) => {
-    
-
+    if (req.body.email !== '' && req.body.password !== '') {
+        db('login').select('*').where('email', '=', req.body.email)
+        .then(user => {
+            if (user !== []) {
+                const isValid = bcrypt.compareSync(req.body.password, user[0].hash);
+                if (isValid) {
+                    return (
+                        db('users').select('*').where('email', '=', req.body.email)
+                        .then(User => res.json(User[0]))
+                        .catch(err => 'inner' + err)
+                    )
+                } else {
+                    return (res.json(false))
+                }
+            } else {
+                res.json(false)
+            }
+        }).catch(err => res.status(400).json('outer' + err))
+    } else {
+        res.json(false)
+    }
 })
 
 app.get('/profile/:id', (req, res) => {
@@ -113,24 +95,13 @@ app.put('/imagecount', (req, res) => {
         id,
         count
     } = req.body;
-    let found = false;
-    database.users.forEach((user) => {
-        if (user.id === id) {
-            found = true;
-            user.entries += count;
-            ranker()
-            return (res.json({
-                entries: user.entries,
-                rank: user.rank
-            }))
-        }
-    })
-
-    if (!found) {
-        res.status(400).json("not found")
-    }
-
-
+    db('users').where('id', '=', id).increment('entries', count)
+    .catch(err => "error in increasing count")
+    db('users').select('entries').where('id' ,'=', id).then(
+        data => res.json({
+            entries : data[0].entries
+        })
+    )
 })
 
 
