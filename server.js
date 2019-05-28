@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require('body-parser')
+const bcrypt = require('bcrypt-nodejs')
 const cors = require('cors')
 const knex = require('knex');
 
@@ -55,7 +56,7 @@ const ranker = () => {
 }
 
 app.get("/", (req, res) => {
-    res.json(database.users)
+    res.json("WELCOME")
 })
 
 app.post("/register", (req, res) => {
@@ -64,23 +65,30 @@ app.post("/register", (req, res) => {
         password,
         name
     } = req.body
-    db('users').insert({
-        name: name,
-        email: email,
-        joined : new Date()
-    })
-    res.json("Successfully Registered")
+    const hash = bcrypt.hashSync(password)
+    db.transaction(trx => {
+        trx.insert({
+                email: email,
+                hash: hash
+            })
+            .into('login')
+            .returning('email')
+            .then(loginEmail => {
+                return (
+                    trx('users').insert({
+                        name: name,
+                        email: loginEmail[0],
+                        joined: new Date()
+                    }).then(res.json("Successfully Registered"))
+                )
+            }).then(trx.commit)
+            .then(trx.rollback)
+    }).catch( err => res.status(400).json(err))
+
 })
 
 app.post("/signin", (req, res) => {
-    const user = database.users.filter((user) => {
-        return (req.body.email === user.email)
-    })
-    if (user.length > 0 && user[0].password === req.body.password) {
-        res.json(user[0])
-    } else {
-        res.status(400).json(false)
-    }
+    
 
 })
 
