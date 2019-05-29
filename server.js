@@ -32,23 +32,9 @@ app.post("/signin", signin.handleSignin(db,bcrypt))
 
 app.put('/imagecount', image.handleImageCount(db))
 
+app.post('/imageApi', image.handleImageApi )
+
 app.listen(3000, () => {
     console.log("App is running at port 3000")
 })
 
-// app.get('/profile/:id', (req, res) => {
-//     const {
-//         id
-//     } = req.params;
-//     let found = false;
-//     database.users.forEach(user => {
-//         if (user.id == id) {
-//             found = true;
-//             return res.json(user)
-//         }
-//     });
-//     if (!found) {
-//         res.status(400).json("not found")
-//     }
-
-// })
