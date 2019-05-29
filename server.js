@@ -4,6 +4,10 @@ const bcrypt = require('bcrypt-nodejs')
 const cors = require('cors')
 const knex = require('knex');
 
+const register = require('./controllers/register')
+const signin = require('./controllers/signin')
+const imagecount = require('./controllers/imagecount')
+
 const app = express();
 app.use(bodyParser.json())
 app.use(cors())
@@ -22,85 +26,29 @@ app.get("/", (req, res) => {
     res.json("WELCOME")
 })
 
-app.post("/register", (req, res) => {
-    const {
-        email,
-        password,
-        name
-    } = req.body
-    const hash = bcrypt.hashSync(password)
-    db.transaction(trx => {
-        trx.insert({
-                email: email,
-                hash: hash
-            })
-            .into('login')
-            .returning('email')
-            .then(loginEmail => {
-                return (
-                    trx('users').insert({
-                        name: name,
-                        email: loginEmail[0],
-                        joined: new Date()
-                    }).then(res.json("Successfully Registered"))
-                )
-            }).then(trx.commit)
-            .then(trx.rollback)
-    }).catch(err => res.status(400).json(err))
+app.post("/register", register.handleRegister(db, bcrypt))
 
-})
+app.post("/signin", signin.handleSignin(db,bcrypt))
 
-app.post("/signin", (req, res) => {
-    db('login').select('*').where('email', '=', req.body.email)
-    .then( (user) => {
-        if (user === []) {
-            return(res.json(false))
-        } else {
-            let isValid = bcrypt.compareSync(req.body.password, user[0].hash);
-            if (isValid === true) {
-                return (
-                    db('users').select('*').where('email', '=',req.body.email )
-                    .then(User => res.json(User[0]))
-                )
-            } else {
-                return (res.json(false))
-            }
-        }
-
-    }).catch(err => {res.status(400).json(false)})
-
-})
-
-app.get('/profile/:id', (req, res) => {
-    const {
-        id
-    } = req.params;
-    let found = false;
-    database.users.forEach(user => {
-        if (user.id == id) {
-            found = true;
-            return res.json(user)
-        }
-    });
-    if (!found) {
-        res.status(400).json("not found")
-    }
-
-})
-app.put('/imagecount', (req, res) => {
-    const {
-        id,
-        count
-    } = req.body;
-    db('users')
-    .where('id', '=', id)
-    .increment('entries', count)
-    .returning('entries')
-    .then( Entries => res.json(Entries[0]))
-    .catch( err => "Error while incrementing entries" + err)
-})
-
+app.put('/imagecount', imagecount.handleImageCount(db,bcrypt))
 
 app.listen(3000, () => {
     console.log("App is running at port 3000")
 })
+
+// app.get('/profile/:id', (req, res) => {
+//     const {
+//         id
+//     } = req.params;
+//     let found = false;
+//     database.users.forEach(user => {
+//         if (user.id == id) {
+//             found = true;
+//             return res.json(user)
+//         }
+//     });
+//     if (!found) {
+//         res.status(400).json("not found")
+//     }
+
+// })
