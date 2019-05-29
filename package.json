@@ -2,9 +2,9 @@
   "name": "facedetection-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "",
   "scripts": {
-    "start": "node"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
