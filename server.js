@@ -6,7 +6,7 @@ const knex = require('knex');
 
 const register = require('./controllers/register')
 const signin = require('./controllers/signin')
-const imagecount = require('./controllers/imagecount')
+const image = require('./controllers/image')
 
 const app = express();
 app.use(bodyParser.json())
@@ -30,7 +30,7 @@ app.post("/register", register.handleRegister(db, bcrypt))
 
 app.post("/signin", signin.handleSignin(db,bcrypt))
 
-app.put('/imagecount', imagecount.handleImageCount(db,bcrypt))
+app.put('/imagecount', image.handleImageCount(db))
 
 app.listen(3000, () => {
     console.log("App is running at port 3000")
