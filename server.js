@@ -35,6 +35,6 @@ app.put('/imagecount', image.handleImageCount(db))
 app.post('/imageApi', image.handleImageApi )
 
 app.listen(process.env.PORT || 3000, () => {
-    console.log("App is running at port 3000")
+    console.log(`App is running at port ${process.env.PORT}` )
 })
 
