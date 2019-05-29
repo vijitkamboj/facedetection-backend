@@ -92,13 +92,12 @@ app.put('/imagecount', (req, res) => {
         id,
         count
     } = req.body;
-    db('users').where('id', '=', id).increment('entries', count)
-    .catch(err => "error in increasing count " , err)
-    db('users').select('entries').where('id' ,'=', id).then(
-        data => res.json({
-            entries : data[0].entries
-        })
-    ).catch( err => 'Error while selecting entries ',err)
+    db('users')
+    .where('id', '=', id)
+    .increment('entries', count)
+    .returning('entries')
+    .then( Entries => res.json(Entries[0]))
+    .catch( err => "Error while incrementing entries" + err)
 })
 
 
