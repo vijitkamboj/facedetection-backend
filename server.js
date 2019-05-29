@@ -51,27 +51,25 @@ app.post("/register", (req, res) => {
 })
 
 app.post("/signin", (req, res) => {
-    if (req.body.email !== '' && req.body.password !== '') {
-        db('login').select('*').where('email', '=', req.body.email)
-        .then(user => {
-            if (user !== []) {
-                const isValid = bcrypt.compareSync(req.body.password, user[0].hash);
-                if (isValid) {
-                    return (
-                        db('users').select('*').where('email', '=', req.body.email)
-                        .then(User => res.json(User[0]))
-                        .catch(err => 'inner' + err)
-                    )
-                } else {
-                    return (res.json(false))
-                }
+    db('login').select('*').where('email', '=', req.body.email)
+    .then( (user) => {
+        if (user === []) {
+            return(res.json(false))
+        } else {
+            let isValid = bcrypt.compareSync(req.body.password, user[0].hash);
+            if (isValid === true) {
+                return (
+                    db('users').select('*').where('email', '=',req.body.email )
+                    .then(User => res.json(User[0]))
+                    .catch(err =>"Error Getting user after signin ", err)
+                )
             } else {
-                res.json(false)
+                return (res.json(false))
             }
-        }).catch(err => res.status(400).json('outer' + err))
-    } else {
-        res.json(false)
-    }
+        }
+
+    }).catch(err => {res.status(400).json(false)})
+
 })
 
 app.get('/profile/:id', (req, res) => {
@@ -96,12 +94,12 @@ app.put('/imagecount', (req, res) => {
         count
     } = req.body;
     db('users').where('id', '=', id).increment('entries', count)
-    .catch(err => "error in increasing count")
+    .catch(err => "error in increasing count " , err)
     db('users').select('entries').where('id' ,'=', id).then(
         data => res.json({
             entries : data[0].entries
         })
-    )
+    ).catch( err => 'Error while selecting entries ',err)
 })
 
 
