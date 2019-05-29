@@ -61,7 +61,6 @@ app.post("/signin", (req, res) => {
                 return (
                     db('users').select('*').where('email', '=',req.body.email )
                     .then(User => res.json(User[0]))
-                    .catch(err =>"Error Getting user after signin ", err)
                 )
             } else {
                 return (res.json(false))
