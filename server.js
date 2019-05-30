@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require('body-parser')
 const bcrypt = require('bcrypt-nodejs')
-// const cors = require('cors')
+const cors = require('cors')
 const knex = require('knex');
 
 const register = require('./controllers/register')
@@ -10,17 +10,7 @@ const image = require('./controllers/image')
 
 const app = express();
 app.use(bodyParser.json())
-app.use( (req,res,next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'content-type');
-    res.header('Access-Control-Allow-Origin', '*');
-    if(req.method === 'OPTIONS'){
-        res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,PATCH');
-        return( res.status(200).json({}))
-    };
-    next();
-})
-// app.use(cors())
+app.use(cors())
 
 
 const db = knex({
