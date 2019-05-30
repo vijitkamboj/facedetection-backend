@@ -12,7 +12,7 @@ const app = express();
 app.use(bodyParser.json())
 // app.use(cors())
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "https://git.heroku.com/vast-woodland-56506.git");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
